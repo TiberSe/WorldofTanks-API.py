@@ -1,2 +1,2 @@
-# Wargaming-API.py
-API Wrapper for Wargaming API in Python
+# WorldofTanks-API.py
+API Wrapper for Wargaming API for World of Tanks in Python

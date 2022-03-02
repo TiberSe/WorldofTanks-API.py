@@ -17,3 +17,7 @@ class WotApiUpdater:
 
         self.ships_file = f"{self.data_folder}{os.sep}tanks.json"
         self.files = [self.ships_file]
+
+    def update(self):
+        pass
+    

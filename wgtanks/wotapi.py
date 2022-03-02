@@ -10,4 +10,5 @@ class WoTAPI:
     def __init__(self, folder=os.getcwd()):
         self.updater = WotApiUpdater(folder)
         self.updater.update()
+        
 

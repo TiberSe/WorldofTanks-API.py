@@ -20,4 +20,4 @@ class WotApiUpdater:
 
     def update(self):
         pass
-    
+

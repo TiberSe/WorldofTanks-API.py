@@ -1,3 +1,6 @@
+from .extends_escapes import Colors, Escapes
+
+
 class WotApiException(Exception):
     def __init__(self, arg=""):
         self.arg = arg
@@ -7,30 +10,11 @@ class WotApiException(Exception):
 class IllegalTypeException(WotApiException):
     def __str__(self):
         return (
-            f"\033[31m The type of variable :{self.arg} is illegal. Please assign the correct value.`"
+            f"The type of variable: {Escapes.REVERSE + Escapes.BOLD}account_id{Escapes.RESET} is illegal. "
+            f"Please assign the correct value.\nContents: {self.arg}"
         )
     pass
 
 
 class UnknownLanguageException(WotApiException):
-    pass
-
-
-class UnknownChapterException(WotApiException):
-    pass
-
-
-class UnknownDifficultyException(WotApiException):
-    pass
-
-
-class UnknownMemoryException(WotApiException):
-    pass
-
-
-class UnknownFactionException(WotApiException):
-    pass
-
-
-class UnknownEquipmentException(WotApiException):
     pass

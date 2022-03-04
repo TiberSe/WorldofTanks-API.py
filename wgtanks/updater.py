@@ -3,8 +3,9 @@ import json
 import requests
 
 # Constantinopolis
-CDN_URL = 'https://raw.githubusercontent.com/TiberSe/wgapi-cdn/main/'
-TANK_LIST = 'https://raw.githubusercontent.com/TiberSe/wgapi-cdn/main/wot/tanks/list.json'
+CDN_URL = 'https://raw.githubusercontent.com/TiberSe/wgapi-cdn/main/wot/'
+EXCEPT_PARAMS = f'{CDN_URL}/params/except.json'
+TANK_LIST = f'{CDN_URL}/tanks/list.json'
 
 
 class WotApiUpdater:

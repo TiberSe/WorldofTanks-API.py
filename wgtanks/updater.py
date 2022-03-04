@@ -16,8 +16,9 @@ class WotApiUpdater:
         if not os.path.exists(self.data_folder):
             os.mkdir(self.data_folder)
 
-        self.ships_file = f"{self.data_folder}{os.sep}tanks.json"
-        self.files = [self.ships_file]
+        self.tanks_file = f"{self.data_folder}{os.sep}tanks.json"
+        self.params_file = f"{self.data_folder}{os.sep}params.json"
+        self.files = [self.tanks_file, self.params_file]
 
     def update(self):
         pass

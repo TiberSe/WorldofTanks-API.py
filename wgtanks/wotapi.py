@@ -27,10 +27,12 @@ class WoTAPI:
 
     def get_account_info_by_id(self, account_id: int, extra: str = '', fields: tuple = ()) -> dict:
         """Retrieves the account info by account ID.
-        :param int account_id:
-        :param str extra:
-        :param tuple fields:
-        :return:
+
+        :param int account_id: the id of the account to lookup.
+        :param str extra: extra field.
+        :param tuple fields: a tuple of fields to return in the results.
+
+        :return: dict containing the account info.
         """
         params = [
             {'name': 'account_id', 'value': account_id, 'type': int, 'min_num': 0, 'max_num': 9000000000},
@@ -48,15 +50,16 @@ class WoTAPI:
 
         :param str account_name: the name of the account to lookup. (Min: 3 chars, Max: 24 chars)
         :param int limit: the maximum number of results to return. (Min: 1, Max: 100)
-        :param bool exact: whether to return only results that match the exact string (Default: True)
-        :param tuple fields: a tuple of fields to return in the results
+        :param bool exact: whether to return only results that match the exact string. (Default: True)
+        :param tuple fields: a tuple of fields to return in the results.
 
         :return: dict containing the account ID
         """
         params = [
             {'name': 'account_name', 'value': account_name, 'type': str, 'min_char': 3, 'max_char': 24},
             {'name': 'limit', 'value': limit, 'type': int, 'min_num': 1, 'max_num': 100},
-            {'name': 'exact', 'value': exact, 'type': bool}, {'name': 'fields', 'value': fields, 'type': tuple}
+            {'name': 'exact', 'value': exact, 'type': bool},
+            {'name': 'fields', 'value': fields, 'type': tuple}
         ]
         self.__integrity_check(params)
         fields = self.__parse_tuple(fields)

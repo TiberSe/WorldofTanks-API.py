@@ -39,7 +39,7 @@ class WoTAPI:
             {'name': 'extra', 'value': extra, 'type': str}, {'name': 'fields', 'value': fields, 'type': tuple}
         ]
         self.__integrity_check(params)
-        fields = self.parse_tuple(fields)
+        fields = self.__parse_tuple(fields)
         response = requests.get(f'{self._ACCOUNT_URL}/info/?application_id={self._API_TOKEN}&account_id={account_id}&'
                                 f'&fields={fields}&extra={extra}&language={self._API_LANG}')
         account_data = json.loads(response.text)
@@ -56,7 +56,7 @@ class WoTAPI:
         :return: dict containing the account ID
         """
         params = [
-            {'name': 'account_name', 'value': account_name, 'type': str, 'min_char': 3, 'max_char': 24},
+            {'name': 'account_name', 'value': account_name, 'type': str, 'min_len': 3, 'max_len': 24},
             {'name': 'limit', 'value': limit, 'type': int, 'min_num': 1, 'max_num': 100},
             {'name': 'exact', 'value': exact, 'type': bool},
             {'name': 'fields', 'value': fields, 'type': tuple}
@@ -66,6 +66,27 @@ class WoTAPI:
         exact = 'exact' if exact else 'startswith'
         response = requests.get(f'{self._ACCOUNT_URL}/list/?application_id={self._API_TOKEN}&search={account_name}&'
                                 f'type={exact}&fields={fields}&language={self._API_LANG}')
+        account_data = json.loads(response.text)
+        return account_data
+
+    def get_players_vehicles(self, account_id: int, tank_id: tuple = (), fields: tuple = ()) -> dict:
+        """Find and retrieves the account ID by account name.
+
+        :param int account_id: the name of the account to lookup. (Min: 3 chars, Max: 24 chars)
+        :param tuple tank_id: Numeric-only IDs of tanks to be acquired packaged in tuple format. (Max: 100)
+        :param tuple fields: a tuple of fields to return in the results.
+
+        :return: dict containing the account ID
+        """
+        params = [
+            {'name': 'account_id', 'value': account_id, 'type': str, 'min_len': 3, 'max_len': 24},
+            {'name': 'tank_id', 'value': tank_id, 'type': tuple, 'min_num': 1, 'max_num': 100},
+            {'name': 'fields', 'value': fields, 'type': tuple}
+        ]
+        self.__integrity_check(params)
+        fields = self.__parse_tuple(fields)
+        response = requests.get(f'{self._ACCOUNT_URL}/tanks/?application_id={self._API_TOKEN}&account_id={account_id}&'
+                                f'tank_id={tank_id}&fields={fields}&language={self._API_LANG}')
         account_data = json.loads(response.text)
         return account_data
 
@@ -80,14 +101,14 @@ class WoTAPI:
             if 'type' in prm:
                 if not isinstance(prm['value'], prm['type']):
                     raise IllegalTypeException(var_name=prm['name'], value=prm['value'], intend=str(prm['type']))
-            if 'min_char' in prm:
-                if not len(prm['value']) >= prm['min_char']:
+            if 'min_len' in prm:
+                if not len(prm['value']) >= prm['min_len']:
                     raise IllegalLengthException(
-                        var_name=prm['name'], value=prm['value'], intend=f'longer than {prm["min_char"]} chars')
-            if 'max_char' in prm:
-                if not len(prm['value']) <= prm['max_char']:
+                        var_name=prm['name'], value=prm['value'], intend=f'longer than {prm["min_len"]} chars')
+            if 'max_len' in prm:
+                if not len(prm['value']) <= prm['max_len']:
                     raise IllegalLengthException(
-                        var_name=prm['name'], value=prm['value'], intend=f'less than {prm["min_char"]} chars')
+                        var_name=prm['name'], value=prm['value'], intend=f'less than {prm["max_len"]} chars')
             if 'min_num' in prm:
                 if not prm['value'] >= prm['min_num']:
                     raise IllegalLengthException(
@@ -97,4 +118,3 @@ class WoTAPI:
                     raise IllegalLengthException(
                         var_name=prm['name'], value=prm['value'], intend=f'less than {prm["max_num"]}')
         return
-

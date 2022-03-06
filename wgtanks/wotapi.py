@@ -73,18 +73,19 @@ class WoTAPI:
         """Find and retrieves the account ID by account name.
 
         :param int account_id: the name of the account to lookup. (Min: 3 chars, Max: 24 chars)
-        :param tuple tank_id: Numeric-only IDs of tanks to be acquired packaged in tuple format. (Max: 100)
+        :param tuple tank_id: a tuple of tank ID to retrieves (Max: 100)
         :param tuple fields: a tuple of fields to return in the results.
 
-        :return: dict containing the account ID
+        :return: dict containing the player's tanks info
         """
         params = [
-            {'name': 'account_id', 'value': account_id, 'type': str, 'min_len': 3, 'max_len': 24},
-            {'name': 'tank_id', 'value': tank_id, 'type': tuple, 'min_num': 1, 'max_num': 100},
+            {'name': 'account_id', 'value': account_id, 'type': int, 'min_num': 0, 'max_num': 9000000000},
+            {'name': 'tank_id', 'value': tank_id, 'type': tuple, 'min_len': 0, 'max_len': 100},
             {'name': 'fields', 'value': fields, 'type': tuple}
         ]
         self.__integrity_check(params)
         fields = self.__parse_tuple(fields)
+        tank_id = self .__parse_tuple(tank_id)
         response = requests.get(f'{self._ACCOUNT_URL}/tanks/?application_id={self._API_TOKEN}&account_id={account_id}&'
                                 f'tank_id={tank_id}&fields={fields}&language={self._API_LANG}')
         account_data = json.loads(response.text)

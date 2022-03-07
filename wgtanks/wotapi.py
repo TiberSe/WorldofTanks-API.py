@@ -3,11 +3,14 @@ import os
 import json
 import requests
 import re
+import ast
 import time
+
 
 from .utils.enum import Region
 from .utils.exception import *
 from .updater import WotApiUpdater
+from .utils.except_params import params as except_params
 
 
 class WoTAPI:
@@ -25,35 +28,7 @@ class WoTAPI:
         # Initialize API Updater
         self._updater = WotApiUpdater(folder)
         self._updater.update()
-
-    def get_account_info_by_id(self, account_id: int, extra: str = '', fields: tuple = ()) -> dict:
-        """Retrieves the account info by account ID.
-
-        :param tuple account_id: a tuple or int of ID(s) for the accounts to lookup. (Max: 100)
-        :param str extra: extra field.
-        :param tuple fields: a tuple of fields to return in the results.
-
-        :return: dict containing the account info.
-        """
-        print(inspect.stack()[1].function)
-        if isinstance(account_id, int):
-            params = [
-                {'name': 'account_id', 'value': account_id, 'type': int},
-                {'name': 'extra', 'value': extra, 'type': str}, {'name': 'fields', 'value': fields, 'type': tuple}
-            ]
-        else:
-            params = [
-                {'name': 'account_id', 'value': account_id, 'type': tuple, 'incl_only': int, 'min_len': 1,
-                 'max_len': 100},
-                {'name': 'extra', 'value': extra, 'type': str}, {'name': 'fields', 'value': fields, 'type': tuple}
-            ]
-
-        self.__integrity_check(params)
-        fields = self.__parse_tuple(fields)
-        response = requests.get(f'{self._ACCOUNT_URL}/info/?application_id={self._API_TOKEN}&account_id={account_id}&'
-                                f'&fields={fields}&extra={extra}&language={self._API_LANG}')
-        account_data = json.loads(response.text)
-        return account_data
+        self._params = except_params
 
     def get_account_id_by_name(self, account_name: str, limit: int = 5, exact: bool = True, fields: tuple = ()) -> dict:
         """Find and retrieves the account ID by account name.
@@ -65,17 +40,30 @@ class WoTAPI:
 
         :return: dict containing the account ID
         """
-        params = [
-            {'name': 'account_name', 'value': account_name, 'type': str, 'min_len': 3, 'max_len': 24},
-            {'name': 'limit', 'value': limit, 'type': int, 'min_num': 1, 'max_num': 100},
-            {'name': 'exact', 'value': exact, 'type': bool},
-            {'name': 'fields', 'value': fields, 'type': tuple}
-        ]
-        self.__integrity_check(params)
+        self.__integrity_check(account_name, limit, exact, fields)
         fields = self.__parse_tuple(fields)
         exact = 'exact' if exact else 'startswith'
         response = requests.get(f'{self._ACCOUNT_URL}/list/?application_id={self._API_TOKEN}&search={account_name}&'
                                 f'type={exact}&fields={fields}&language={self._API_LANG}')
+        account_data = json.loads(response.text)
+        return account_data
+
+    def get_account_info_by_id(self, account_id: tuple, extra: str = '', fields: tuple = ()) -> dict:
+        """Retrieves the account info by account ID.
+
+        :param tuple account_id: a tuple or int of ID(s) for the accounts to lookup. (Max: 100)
+        :param str extra: extra field.
+        :param tuple fields: a tuple of fields to return in the results.
+
+        :return: dict containing the account info.
+        """
+        if isinstance(account_id, int):
+            account_id = (account_id,)
+        self.__integrity_check(account_id, extra, fields)
+        account_id = self.__parse_tuple(account_id)
+        fields = self.__parse_tuple(fields)
+        response = requests.get(f'{self._ACCOUNT_URL}/info/?application_id={self._API_TOKEN}&account_id={account_id}&'
+                                f'&fields={fields}&extra={extra}&language={self._API_LANG}')
         account_data = json.loads(response.text)
         return account_data
 
@@ -88,12 +76,7 @@ class WoTAPI:
 
         :return: dict containing the player's tanks info
         """
-        params = [
-            {'name': 'account_id', 'value': account_id, 'type': int, 'min_num': 0, 'max_num': 9000000000},
-            {'name': 'tank_id', 'value': tank_id, 'type': tuple, 'min_len': 0, 'max_len': 100},
-            {'name': 'fields', 'value': fields, 'type': tuple}
-        ]
-        self.__integrity_check(params)
+        self.__integrity_check(account_id, tank_id, fields)
         fields = self.__parse_tuple(fields)
         tank_id = self .__parse_tuple(tank_id)
         response = requests.get(f'{self._ACCOUNT_URL}/tanks/?application_id={self._API_TOKEN}&account_id={account_id}&'
@@ -109,11 +92,7 @@ class WoTAPI:
 
         :return: dict containing the player's tanks info
         """
-        params = [
-            {'name': 'account_id', 'value': account_id, 'type': int, 'min_num': 0, 'max_num': 9000000000},
-            {'name': 'fields', 'value': fields, 'type': tuple}
-        ]
-        self.__integrity_check(params)
+        self.__integrity_check(account_id, fields)
         fields = self.__parse_tuple(fields)
         response = requests.get(f'{self._ACCOUNT_URL}/achievements/?application_id={self._API_TOKEN}&'
                                 f'account_id={account_id}&fields={fields}&language={self._API_LANG}')
@@ -122,35 +101,40 @@ class WoTAPI:
 
     @staticmethod
     def __parse_tuple(data: tuple) -> str:
+        if len(data) == 1:
+            data = re.sub("\(|\'|\)|\ |\,", '', str(data))
+            return data
         data = re.sub("\(|\'|\)|\ ", '', str(data))
         return data
 
-    @staticmethod
-    def __integrity_check(params: list):
-        for prm in params:
-            if 'type' in prm:
-                if not isinstance(prm['value'], prm['type']):
-                    raise IllegalTypeException(var_name=prm['name'], value=prm['value'], intend=str(prm['type']))
-            if 'min_len' in prm:
-                if not len(prm['value']) >= prm['min_len']:
+    def __integrity_check(self, *args):
+        i = 0
+        for param in self._params[inspect.stack()[1].function]:
+            param['value'] = args[i]
+            if 'type' in param:
+                if not isinstance(param['value'], param['type']):
+                    raise IllegalTypeException(var_name=param['name'], value=param['value'], intend=str(param['type']))
+            if 'min_len' in param:
+                if not len(param['value']) >= param['min_len']:
                     raise IllegalLengthException(
-                        var_name=prm['name'], value=prm['value'], intend=f'longer than {prm["min_len"]} chars')
-            if 'max_len' in prm:
-                if not len(prm['value']) <= prm['max_len']:
+                        var_name=param['name'], value=param['value'], intend=f'longer than {param["min_len"]} chars')
+            if 'max_len' in param:
+                if not len(param['value']) <= param['max_len']:
                     raise IllegalLengthException(
-                        var_name=prm['name'], value=prm['value'], intend=f'less than {prm["max_len"]} chars')
-            if 'min_num' in prm:
-                if not prm['value'] >= prm['min_num']:
+                        var_name=param['name'], value=param['value'], intend=f'less than {param["max_len"]} chars')
+            if 'min_num' in param:
+                if not param['value'] >= param['min_num']:
                     raise IllegalLengthException(
-                        var_name=prm['name'], value=prm['value'], intend=f'more than {prm["min_num"]}')
-            if 'max_num' in prm:
-                if not prm['value'] <= prm['max_num']:
+                        var_name=param['name'], value=param['value'], intend=f'more than {param["min_num"]}')
+            if 'max_num' in param:
+                if not param['value'] <= param['max_num']:
                     raise IllegalLengthException(
-                        var_name=prm['name'], value=prm['value'], intend=f'less than {prm["max_num"]}')
-            if 'incl_only' in prm:
-                for series in prm['value']:
-                    if not isinstance(series, prm['incl_only']):
+                        var_name=param['name'], value=param['value'], intend=f'less than {param["max_num"]}')
+            if 'incl_only' in param:
+                for series in param['value']:
+                    if not isinstance(series, param['incl_only']):
                         raise IllegalTypeException(
-                            var_name=prm['name'], value=prm['value'], intend=str(prm['incl_only']))
-
+                            var_name=param['name'], value=param['value'], intend=str(param['incl_only']))
+            param['value'] = None
+            i += 1
         return

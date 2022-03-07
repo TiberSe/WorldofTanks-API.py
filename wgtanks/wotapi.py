@@ -2,9 +2,6 @@ import inspect
 import os
 import json
 import requests
-import re
-import ast
-import time
 
 
 from .utils.enum import Region
@@ -57,8 +54,8 @@ class WoTAPI:
 
         :return: dict containing the account info.
         """
-        if isinstance(account_id, int):
-            account_id = (account_id,)
+        args = locals()
+        args['account_id'] = (args['account_id'],) if isinstance(args['account_id'], int) else args['account_id']
         self.__integrity_check(account_id, extra, fields)
         account_id = self.__parse_tuple(account_id)
         fields = self.__parse_tuple(fields)
@@ -67,15 +64,19 @@ class WoTAPI:
         account_data = json.loads(response.text)
         return account_data
 
-    def get_players_vehicles(self, account_id: int, tank_id: tuple = (), fields: tuple = ()) -> dict:
+    def get_players_vehicles(self, account_id: tuple, tank_id: tuple = (), fields: tuple = ()) -> dict:
         """Find and retrieves the account ID by account name.
 
-        :param int account_id: the id of the account to lookup.
-        :param tuple tank_id: a tuple of tanks ID to retrieves (Max: 100)
-        :param tuple fields: a tuple of fields to return in the results.
+        :param int account_id: a tuple or int of ID(s) for the account to lookup. (Max: 100)
+        :param tuple tank_id: a tuple or int of tank(s) ID to retrieves. (Max: 100)
+        :param tuple fields: a tuple or string of field(s) to return in the results. (Max: 100)
 
         :return: dict containing the player's tanks info
         """
+
+        "{URL}/tanks/?account_id=&tank_id={tank_id}&fields={fields}&language={self._API_LANG}"
+        account_id = (account_id,) if isinstance(account_id, int) else account_id
+        tank_id = (tank_id,) if isinstance(account_id, int) else account_id
         self.__integrity_check(account_id, tank_id, fields)
         fields = self.__parse_tuple(fields)
         tank_id = self .__parse_tuple(tank_id)
@@ -84,7 +85,7 @@ class WoTAPI:
         account_data = json.loads(response.text)
         return account_data
 
-    def get_players_achievements(self, account_id: int, fields: tuple = ()) -> dict:
+    def get_players_achievements(self, account_id: tuple, fields: tuple = ()) -> dict:
         """Find and retrieves the player's achievements by account ID.
 
         :param int account_id: the id of the account to lookup.
@@ -100,11 +101,12 @@ class WoTAPI:
         return account_data
 
     @staticmethod
+    def __fix_params(data: dict):
+        return
+
+    @staticmethod
     def __parse_tuple(data: tuple) -> str:
-        if len(data) == 1:
-            data = re.sub("\(|\'|\)|\ |\,", '', str(data))
-            return data
-        data = re.sub("\(|\'|\)|\ ", '', str(data))
+        data = ','.join(map(str, data))
         return data
 
     def __integrity_check(self, *args):

@@ -64,7 +64,7 @@ params = {
             'name': 'fields',
             'value': None,
             'type': tuple,
-            'incl_only': int
+            'incl_only': str
         }
     ],
     "get_players_achievements": [

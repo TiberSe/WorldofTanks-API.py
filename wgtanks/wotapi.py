@@ -55,8 +55,10 @@ class WoTAPI:
         :return: dict containing the account info.
         """
         args = locals()
-        args['account_id'] = (args['account_id'],) if isinstance(args['account_id'], int) else args['account_id']
-        self.__integrity_check(account_id, extra, fields)
+        print(args)
+        args = self.__fix_params(args)
+        print(args)
+        self.__integrity_check(args)
         account_id = self.__parse_tuple(account_id)
         fields = self.__parse_tuple(fields)
         response = requests.get(f'{self._ACCOUNT_URL}/info/?application_id={self._API_TOKEN}&account_id={account_id}&'
@@ -100,16 +102,24 @@ class WoTAPI:
         account_data = json.loads(response.text)
         return account_data
 
-    @staticmethod
-    def __fix_params(data: dict):
-        return
+    def __fix_params(self, args: dict):
+        for param in self._params[inspect.stack()[1].function]:
+            if param['name'] in args:
+                if 'incl_only' not in param:
+                    continue
+                var = args[param['name']]
+                if not isinstance(var, param['type']) and isinstance(var, param['incl_only']):
+                    fixed_var = [var]
+                    fixed_var = tuple(map(param['incl_only'], fixed_var))
+                    args[param['name']] = fixed_var
+        return args
 
     @staticmethod
     def __parse_tuple(data: tuple) -> str:
         data = ','.join(map(str, data))
         return data
 
-    def __integrity_check(self, *args):
+    def __integrity_check(self, args: dict):
         i = 0
         for param in self._params[inspect.stack()[1].function]:
             param['value'] = args[i]

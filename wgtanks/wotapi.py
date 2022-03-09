@@ -37,11 +37,15 @@ class WoTAPI:
 
         :return: dict containing the account ID
         """
-        self.__integrity_check(account_name, limit, exact, fields)
-        fields = self.__parse_tuple(fields)
+        args = locals()
+        args = self.__fix_params(args)
+        self.__integrity_check(args)
+        args = self.__parse_tuple(args)
+        print(args)
         exact = 'exact' if exact else 'startswith'
-        response = requests.get(f'{self._ACCOUNT_URL}/list/?application_id={self._API_TOKEN}&search={account_name}&'
-                                f'type={exact}&fields={fields}&language={self._API_LANG}')
+        url = f"{self._ACCOUNT_URL}/list/?application_id={self._API_TOKEN}&language={self._API_LANG}&type={exact}&"\
+              'search={account_name}&fields={fields}'.format(**args)
+        response = requests.get(url)
         account_data = json.loads(response.text)
         return account_data
 
@@ -55,14 +59,12 @@ class WoTAPI:
         :return: dict containing the account info.
         """
         args = locals()
-        print(args)
         args = self.__fix_params(args)
-        print(args)
         self.__integrity_check(args)
-        account_id = self.__parse_tuple(account_id)
-        fields = self.__parse_tuple(fields)
-        response = requests.get(f'{self._ACCOUNT_URL}/info/?application_id={self._API_TOKEN}&account_id={account_id}&'
-                                f'&fields={fields}&extra={extra}&language={self._API_LANG}')
+        args = self.__parse_tuple(args)
+        url = f"{self._ACCOUNT_URL}/info/?application_id={self._API_TOKEN}&language={self._API_LANG}&"\
+              '&account_id={account_id}&extra={extra}&fields={fields}'.format(**args)
+        response = requests.get(url)
         account_data = json.loads(response.text)
         return account_data
 
@@ -76,7 +78,7 @@ class WoTAPI:
         :return: dict containing the player's tanks info
         """
 
-        "{URL}/tanks/?account_id=&tank_id={tank_id}&fields={fields}&language={self._API_LANG}"
+        
         account_id = (account_id,) if isinstance(account_id, int) else account_id
         tank_id = (tank_id,) if isinstance(account_id, int) else account_id
         self.__integrity_check(account_id, tank_id, fields)
@@ -115,14 +117,16 @@ class WoTAPI:
         return args
 
     @staticmethod
-    def __parse_tuple(data: tuple) -> str:
-        data = ','.join(map(str, data))
-        return data
+    def __parse_tuple(args: dict) -> dict:
+        for arg in args.items():
+            print(arg)
+            if isinstance(arg[1], tuple):
+                args[arg[0]] = ','.join(map(str, arg[1]))
+        return args
 
     def __integrity_check(self, args: dict):
-        i = 0
         for param in self._params[inspect.stack()[1].function]:
-            param['value'] = args[i]
+            param['value'] = args[param['name']]
             if 'type' in param:
                 if not isinstance(param['value'], param['type']):
                     raise IllegalTypeException(var_name=param['name'], value=param['value'], intend=str(param['type']))
@@ -148,5 +152,4 @@ class WoTAPI:
                         raise IllegalTypeException(
                             var_name=param['name'], value=param['value'], intend=str(param['incl_only']))
             param['value'] = None
-            i += 1
         return

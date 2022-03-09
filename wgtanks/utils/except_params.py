@@ -22,7 +22,8 @@ params = {
         {
             'name': 'fields',
             'value': None,
-            'type': tuple
+            'type': tuple,
+            'incl_only': str
         }
     ],
     "get_account_info_by_id": [
@@ -35,12 +36,14 @@ params = {
         {
             'name': 'extra',
             'value': None,
-            'type': str
+            'type': tuple,
+            'incl_only': str
         },
         {
             'name': 'fields',
             'value': None,
-            'type': tuple
+            'type': tuple,
+            'incl_only': str
         }
     ],
     "get_players_vehicles": [
@@ -60,7 +63,8 @@ params = {
         {
             'name': 'fields',
             'value': None,
-            'type': tuple
+            'type': tuple,
+            'incl_only': int
         }
     ],
     "get_players_achievements": [
@@ -73,7 +77,8 @@ params = {
         {
             'name': 'fields',
             'value': None,
-            'type': tuple
+            'type': tuple,
+            'incl_only': str
         }
     ]
 

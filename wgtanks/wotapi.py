@@ -77,15 +77,13 @@ class WoTAPI:
 
         :return: dict containing the player's tanks info
         """
-
-        
-        account_id = (account_id,) if isinstance(account_id, int) else account_id
-        tank_id = (tank_id,) if isinstance(account_id, int) else account_id
-        self.__integrity_check(account_id, tank_id, fields)
-        fields = self.__parse_tuple(fields)
-        tank_id = self .__parse_tuple(tank_id)
-        response = requests.get(f'{self._ACCOUNT_URL}/tanks/?application_id={self._API_TOKEN}&account_id={account_id}&'
-                                f'tank_id={tank_id}&fields={fields}&language={self._API_LANG}')
+        args = locals()
+        args = self.__fix_params(args)
+        self.__integrity_check(args)
+        args = self.__parse_tuple(args)
+        url = f'{self._ACCOUNT_URL}/tanks/?application_id={self._API_TOKEN}&language={self._API_LANG}&'\
+              'account_id={account_id}&tank_id={tank_id}&fields={fields}'.format(**args)
+        response = requests.get(url)
         account_data = json.loads(response.text)
         return account_data
 
@@ -97,10 +95,13 @@ class WoTAPI:
 
         :return: dict containing the player's tanks info
         """
-        self.__integrity_check(account_id, fields)
-        fields = self.__parse_tuple(fields)
-        response = requests.get(f'{self._ACCOUNT_URL}/achievements/?application_id={self._API_TOKEN}&'
-                                f'account_id={account_id}&fields={fields}&language={self._API_LANG}')
+        args = locals()
+        args = self.__fix_params(args)
+        self.__integrity_check(args)
+        args = self.__parse_tuple(args)
+        url = f'{self._ACCOUNT_URL}/achievements/?application_id={self._API_TOKEN}&language={self._API_LANG}&'\
+              'account_id={account_id}&fields={fields}'.format(**args)
+        response = requests.get(url)
         account_data = json.loads(response.text)
         return account_data
 
@@ -119,7 +120,6 @@ class WoTAPI:
     @staticmethod
     def __parse_tuple(args: dict) -> dict:
         for arg in args.items():
-            print(arg)
             if isinstance(arg[1], tuple):
                 args[arg[0]] = ','.join(map(str, arg[1]))
         return args

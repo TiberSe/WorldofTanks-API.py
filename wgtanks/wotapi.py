@@ -128,7 +128,8 @@ class WoTAPI:
             param['value'] = args[param['name']]
             if 'type' in param:
                 if not isinstance(param['value'], param['type']):
-                    raise IllegalTypeException(var_name=param['name'], value=param['value'], intend=str(param['type']))
+                    raise IllegalTypeException(
+                        var_name=param['name'], value=param['value'], intend=str(param['type']))
             if 'min_len' in param:
                 if not len(param['value']) >= param['min_len']:
                     raise IllegalLengthException(

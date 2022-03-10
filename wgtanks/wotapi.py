@@ -41,7 +41,6 @@ class WoTAPI:
         args = self.__fix_params(args)
         self.__integrity_check(args)
         args = self.__parse_tuple(args)
-        print(args)
         exact = 'exact' if exact else 'startswith'
         url = f"{self._ACCOUNT_URL}/list/?application_id={self._API_TOKEN}&language={self._API_LANG}&type={exact}&"\
               'search={account_name}&fields={fields}'.format(**args)

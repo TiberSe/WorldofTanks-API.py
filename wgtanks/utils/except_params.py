@@ -44,6 +44,11 @@ params = {
             'value': None,
             'type': tuple,
             'incl_only': str
+        },
+        {
+            'name': 'account_id',
+            'value': None,
+            'type': str,
         }
     ],
     "get_players_vehicles": [
@@ -80,6 +85,33 @@ params = {
             'type': tuple,
             'incl_only': str
         }
-    ]
+    ],
+    "get_clan_info_by_name": [
+        {
+            'name': 'clan_name',
+            'value': None,
+            'type': str,
+            'min_len': 2
+        },
+        {
+            'name': 'limit',
+            'value': None,
+            'type': int,
+            'min_num': 1,
+            'max_num': 100
+        },
+        {
+            'name': 'page_no',
+            'value': None,
+            'type': int,
+            'min_num': 1,
+        },
+        {
+            'name': 'fields',
+            'value': None,
+            'type': tuple,
+            'incl_only': str
+        }
 
+    ]
 }

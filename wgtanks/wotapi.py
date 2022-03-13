@@ -105,7 +105,7 @@ class WoTAPI:
         return return_data
 
     def get_clan_info_by_name(self, clan_name: str, limit: int = 5, page_no: int = 1, fields: tuple = ()) -> dict:
-        """Find and retrieves the clan info by clan name or clan tag.
+        """Find and retrieves clans info by clan name or clan tag.
 
         :param str clan_name: The name of the account to lookup. (Min: 3 chars, Max: 24 chars)
         :param int limit: The maximum number of results to return. (Min: 1, Max: 100)
@@ -123,6 +123,16 @@ class WoTAPI:
         response = requests.get(url)
         return_data = json.loads(response.text)
         return return_data
+
+    def get_clan_info_by_id(self, clan_id: int, extra: str, fields: tuple = ()) -> dict:
+        """Find and retrieves the clan info by clan id.
+
+        :param int clan_id: A tuple or int of ID(s) to clan lookup. (Min: 1, Max: 100)
+        :param str extra: A tuple of extra fields.
+        :param tuple fields: A tuple of fields to return in the results. (Max: 100)
+
+        :return: dict containing the clan info
+        """
 
     def __fix_params(self, args: dict):
         for param in self._params[inspect.stack()[1].function]:

@@ -141,8 +141,7 @@ class WoTAPI:
                     continue
                 var = args[param['name']]
                 if not isinstance(var, param['type']) and isinstance(var, param['incl_only']):
-                    fixed_var = [var]
-                    fixed_var = tuple(map(param['incl_only'], fixed_var))
+                    fixed_var = tuple(map(param['incl_only'], [var]))
                     args[param['name']] = fixed_var
         return args
 

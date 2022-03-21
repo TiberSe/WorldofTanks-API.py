@@ -44,11 +44,6 @@ params = {
             'value': None,
             'type': tuple,
             'incl_only': str
-        },
-        {
-            'name': 'account_id',
-            'value': None,
-            'type': str,
         }
     ],
     "get_players_vehicles": [
@@ -113,5 +108,19 @@ params = {
             'incl_only': str
         }
 
+    ],
+    "get_clan_member_details_by_id": [
+        {
+            'name': 'account_id',
+            'value': None,
+            'type': tuple,
+            'incl_only': int
+        },
+        {
+            'name': 'fields',
+            'value': None,
+            'type': tuple,
+            'incl_only': str
+        }
     ]
 }

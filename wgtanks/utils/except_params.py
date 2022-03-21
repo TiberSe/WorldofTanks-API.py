@@ -122,5 +122,13 @@ params = {
             'type': tuple,
             'incl_only': str
         }
+    ],
+    "get_clan_glossary": [
+        {
+            'name': 'fields',
+            'value': None,
+            'type': tuple,
+            'incl_only': str
+        }
     ]
 }

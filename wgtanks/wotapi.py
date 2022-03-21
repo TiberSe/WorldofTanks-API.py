@@ -154,7 +154,7 @@ class WoTAPI:
         self.__integrity_check(args)
         args = self.__parse_tuple(args)
         url = f'{self._CLANS_URL}/glossary/?application_id={self._API_TOKEN}&language={self._API_LANG}&'\
-              'account_id={account_id}&fields={fields}'.format(**args)
+              'fields={fields}'.format(**args)
         response = requests.get(url)
         return_data = json.loads(response.text)
         return return_data

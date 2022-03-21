@@ -124,15 +124,40 @@ class WoTAPI:
         return_data = json.loads(response.text)
         return return_data
 
-    def get_clan_info_by_id(self, clan_id: int, extra: str, fields: tuple = ()) -> dict:
-        """Find and retrieves the clan info by clan id.
+    def get_clan_member_details_by_id(self, account_id: tuple, fields: tuple = ()) -> dict:
+        """Find and retrieves the clan member info by account id.
 
-        :param int clan_id: A tuple or int of ID(s) to clan lookup. (Min: 1, Max: 100)
-        :param str extra: A tuple of extra fields.
+        :param int account_id: A tuple or int of ID(s) to clan lookup. (Min: 1, Max: 100)
         :param tuple fields: A tuple of fields to return in the results. (Max: 100)
 
-        :return: dict containing the clan info
+        :return: dict containing the clan member details
         """
+        args = locals()
+        args = self.__fix_params(args)
+        self.__integrity_check(args)
+        args = self.__parse_tuple(args)
+        url = f'{self._CLANS_URL}/accountinfo/?application_id={self._API_TOKEN}&language={self._API_LANG}&'\
+              'account_id={account_id}&fields={fields}'.format(**args)
+        response = requests.get(url)
+        return_data = json.loads(response.text)
+        return return_data
+
+    def get_clan_glossary(self, fields: tuple = ()) -> dict:
+        """Find and retrieves the clan member info by account id.
+
+        :param tuple fields: A tuple of fields to return in the results. (Max: 100)
+
+        :return: dict containing the clan glossary
+        """
+        args = locals()
+        args = self.__fix_params(args)
+        self.__integrity_check(args)
+        args = self.__parse_tuple(args)
+        url = f'{self._CLANS_URL}/glossary/?application_id={self._API_TOKEN}&language={self._API_LANG}&'\
+              'account_id={account_id}&fields={fields}'.format(**args)
+        response = requests.get(url)
+        return_data = json.loads(response.text)
+        return return_data
 
     def __fix_params(self, args: dict):
         for param in self._params[inspect.stack()[1].function]:

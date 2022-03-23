@@ -48,7 +48,7 @@ class WoTAPI:
         return_data = json.loads(response.text)
         return return_data
 
-    def get_account_info_by_id(self, account_id: tuple, extra: str = '', fields: tuple = ()) -> dict:
+    def get_account_info(self, account_id: tuple, extra: str = '', fields: tuple = ()) -> dict:
         """Retrieves the account info by account ID.
 
         :param tuple account_id: A tuple or int of ID(s) for the accounts to lookup. (Max: 100)
@@ -124,7 +124,7 @@ class WoTAPI:
         return_data = json.loads(response.text)
         return return_data
 
-    def get_clan_member_details_by_id(self, account_id: tuple, fields: tuple = ()) -> dict:
+    def get_clan_member_details(self, account_id: tuple, fields: tuple = ()) -> dict:
         """Find and retrieves the clan member info by account id.
 
         :param int account_id: A tuple or int of ID(s) to clan lookup. (Min: 1, Max: 100)
@@ -143,8 +143,26 @@ class WoTAPI:
         return return_data
 
     def get_clan_glossary(self, fields: tuple = ()) -> dict:
+        """Retrieves the clan glossary.
+
+        :param tuple fields: A tuple of fields to return in the results. (Max: 100)
+
+        :return: dict containing the clan glossary.
+        """
+        args = locals()
+        args = self.__fix_params(args)
+        self.__integrity_check(args)
+        args = self.__parse_tuple(args)
+        url = f'{self._CLANS_URL}/glossary/?application_id={self._API_TOKEN}&language={self._API_LANG}&' \
+              'fields={fields}'.format(**args)
+        response = requests.get(url)
+        return_data = json.loads(response.text)
+        return return_data
+
+    def get_clan_messageboard(self, access_token, fields: tuple = ()) -> dict:
         """Find and retrieves the clan member info by account id.
 
+        :param str access_token: A string of access token to access private information. (Max: 100)
         :param tuple fields: A tuple of fields to return in the results. (Max: 100)
 
         :return: dict containing the clan glossary
@@ -153,8 +171,26 @@ class WoTAPI:
         args = self.__fix_params(args)
         self.__integrity_check(args)
         args = self.__parse_tuple(args)
-        url = f'{self._CLANS_URL}/glossary/?application_id={self._API_TOKEN}&language={self._API_LANG}&'\
-              'fields={fields}'.format(**args)
+        url = f'{self._CLANS_URL}/messageboard/?application_id={self._API_TOKEN}&language={self._API_LANG}&' \
+              'access_token={access_token}&fields={fields}'.format(**args)
+        response = requests.get(url)
+        return_data = json.loads(response.text)
+        return return_data
+
+    def get_players_clan_history(self, account_id: int, fields: tuple = ()) -> dict:
+        """Find and retrieves the clan member info by account id.
+
+        :param int account_id: The int of ID to the account to lookup. (Max: 1)
+        :param tuple fields: A tuple of fields to return in the results. (Max: 100)
+
+        :return: dict containing the player's clan history
+        """
+        args = locals()
+        args = self.__fix_params(args)
+        self.__integrity_check(args)
+        args = self.__parse_tuple(args)
+        url = f'{self._CLANS_URL}/memberhistory/?application_id={self._API_TOKEN}&language={self._API_LANG}&' \
+              'account_id={account_id}&fields={fields}'.format(**args)
         response = requests.get(url)
         return_data = json.loads(response.text)
         return return_data

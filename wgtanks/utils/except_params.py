@@ -26,7 +26,7 @@ params = {
             'incl_only': str
         }
     ],
-    "get_account_info_by_id": [
+    "get_account_info": [
         {
             'name': 'account_id',
             'value': None,
@@ -109,7 +109,7 @@ params = {
         }
 
     ],
-    "get_clan_member_details_by_id": [
+    "get_clan_member_details": [
         {
             'name': 'account_id',
             'value': None,
@@ -130,5 +130,33 @@ params = {
             'type': tuple,
             'incl_only': str
         }
+    ],
+    "get_clan_messageboard": [
+        {
+            'name': 'access_token',
+            'value': None,
+            'type': str,
+        },
+        {
+            'name': 'fields',
+            'value': None,
+            'type': tuple,
+            'incl_only': str
+        }
+    ],
+    "get_players_clan_history": [
+        {
+            'name': 'account_id',
+            'value': None,
+            'type': tuple,
+            'incl_only': int
+        },
+        {
+            'name': 'fields',
+            'value': None,
+            'type': tuple,
+            'incl_only': str
+        }
     ]
+
 }

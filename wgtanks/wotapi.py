@@ -223,6 +223,24 @@ class WoTAPI:
         return_data = json.loads(response.text)
         return return_data
 
+    def get_clan_ratings(self, clan_id: tuple, fields: tuple = ()) -> dict:
+        """Retrieves the clan ratings info by clan ID.
+
+        :param tuple clan_id: A tuple or int of ID(s) for the clan ratings to lookup. (Max: 100)
+        :param tuple fields: A tuple of fields to return in the results.
+
+        :return: dict containing the account info.
+        """
+        args = locals()
+        args = self.__fix_params(args)
+        self.__integrity_check(args)
+        args = self.__parse_tuple(args)
+        url = f"{self._CLANRATINGS_URL}/clans/?application_id={self._API_TOKEN}&language={self._API_LANG}&"\
+              '&clan_id={clan_id}&fields={fields}'.format(**args)
+        response = requests.get(url)
+        return_data = json.loads(response.text)
+        return return_data
+
     def __fix_params(self, args: dict):
         for param in self._params[inspect.stack()[1].function]:
             if param['name'] in args:

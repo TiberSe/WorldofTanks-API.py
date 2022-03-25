@@ -195,6 +195,12 @@ class WoTAPI:
         return_data = json.loads(response.text)
         return return_data
 
+    def get_types_of_ratings(self):
+        """Retrieves types of ratings.
+
+        :return: dict containing the player's clan history
+        """
+
     def __fix_params(self, args: dict):
         for param in self._params[inspect.stack()[1].function]:
             if param['name'] in args:

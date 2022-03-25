@@ -164,7 +164,20 @@ params = {
             'value': None,
             'type': int
         }
+    ],
+    "get_clan_ratings": [
+        {
+            'name': 'clan_id',
+            'value': None,
+            'type': tuple,
+            'incl_only': int
+        },
+        {
+            'name': 'fields',
+            'value': None,
+            'type': tuple,
+            'incl_only': str
+        }
     ]
-
 
 }

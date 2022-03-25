@@ -206,6 +206,15 @@ class WoTAPI:
         return_data = json.loads(response.text)
         return return_data
 
+    def get_dates_with_available_ratings(self, limit: int = 7):
+        """Retrieves types of ratings.
+
+        :param int limit: The int of Limit to the dates with available ratings to lookup. (Max: 365)
+
+        :return: dict containing the player's clan history
+        """
+
+
     def __fix_params(self, args: dict):
         for param in self._params[inspect.stack()[1].function]:
             if param['name'] in args:

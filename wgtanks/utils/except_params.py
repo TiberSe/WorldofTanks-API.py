@@ -157,6 +157,14 @@ params = {
             'type': tuple,
             'incl_only': str
         }
+    ],
+    "get_dates_with_available_clan_ratings": [
+        {
+            'name': 'limit',
+            'value': None,
+            'type': int
+        }
     ]
+
 
 }

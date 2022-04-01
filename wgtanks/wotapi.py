@@ -3,11 +3,10 @@ import os
 import json
 import requests
 
-
+from .utils import except_params
 from .utils.enum import Region
 from .utils.exception import *
 from .updater import WotApiUpdater
-from .utils.except_params import params as except_params
 
 
 class WoTAPI:
@@ -26,7 +25,24 @@ class WoTAPI:
         # Initialize API Updater
         self._updater = WotApiUpdater(folder)
         self._updater.update()
-        self._params = except_params
+        self._params = except_params.params
+
+    @staticmethod
+    def print_api_wrapper_logo(sheffield=False):
+        """Prints the logo of this wrapper.
+        """
+        if sheffield:
+            print(except_params.sheffield)
+            return True
+        print('''
+██╗    ██╗ ██████╗ ████████╗     █████╗ ██████╗ ██╗    ██╗    ██╗██████╗  █████╗ ██████╗ ██████╗ ███████╗██████╗
+██║    ██║██╔═══██╗╚══██╔══╝    ██╔══██╗██╔══██╗██║    ██║    ██║██╔══██╗██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗
+██║ █╗ ██║██║   ██║   ██║       ███████║██████╔╝██║    ██║ █╗ ██║██████╔╝███████║██████╔╝██████╔╝█████╗  ██████╔╝
+██║███╗██║██║   ██║   ██║       ██╔══██║██╔═══╝ ██║    ██║███╗██║██╔══██╗██╔══██║██╔═══╝ ██╔═══╝ ██╔══╝  ██╔══██╗
+╚███╔███╔╝╚██████╔╝   ██║       ██║  ██║██║     ██║    ╚███╔███╔╝██║  ██║██║  ██║██║     ██║     ███████╗██║  ██║
+ ╚══╝╚══╝  ╚═════╝    ╚═╝       ╚═╝  ╚═╝╚═╝     ╚═╝     ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝     ╚══════╝╚═╝  ╚═╝
+        ''')
+        return True
 
     def get_account_id_by_name(self, account_name: str, limit: int = 5, exact: bool = True, fields: tuple = ()) -> dict:
         """Find and retrieves the account ID by account name.
@@ -237,6 +253,27 @@ class WoTAPI:
         args = self.__parse_tuple(args)
         url = f"{self._CLANRATINGS_URL}/clans/?application_id={self._API_TOKEN}&language={self._API_LANG}&"\
               '&clan_id={clan_id}&fields={fields}'.format(**args)
+        response = requests.get(url)
+        return_data = json.loads(response.text)
+        return return_data
+
+    def get_clan_adjacent_position_in_rating(self, clan_id: int, rank_field: str, date: int,limit: int = 5, fields: tuple = ()):
+        """Retrieves the clan ratings info by clan ID.
+
+        :param int clan_id: The int of ID for the clan ratings to lookup. (Max: 1)
+        :param str rank_field: The string of rank field to lookup.
+        :param int date: The int of date for the clan ratings to lookup.
+        :param int limit: The int of Limit to the dates with available ratings to lookup. (Max: 50)
+        :param tuple fields: A tuple of fields to return in the results.
+
+        :return: dict containing the clan rating position neighbors.
+        """
+        args = locals()
+        args = self.__fix_params(args)
+        self.__integrity_check(args)
+        args = self.__parse_tuple(args)
+        url = f"{self._CLANRATINGS_URL}/neighbors/?application_id={self._API_TOKEN}&language={self._API_LANG}&" \
+              '&rank_field={rank_field}&date={date}&limit={limit}&fields={fields}'.format(**args)
         response = requests.get(url)
         return_data = json.loads(response.text)
         return return_data

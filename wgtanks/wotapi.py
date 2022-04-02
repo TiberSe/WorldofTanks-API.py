@@ -258,7 +258,7 @@ class WoTAPI:
         return return_data
 
     def get_clan_adjacent_position_in_rating(self, clan_id: int, rank_field: str, date: int,limit: int = 5, fields: tuple = ()):
-        """Retrieves the clan ratings info by clan ID.
+        """Retrieves the clan neighbors in ratings by clan ID.
 
         :param int clan_id: The int of ID for the clan ratings to lookup. (Max: 1)
         :param str rank_field: The string of rank field to lookup.

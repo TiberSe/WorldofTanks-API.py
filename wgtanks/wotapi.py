@@ -75,6 +75,7 @@ class WoTAPI:
         :return: dict containing the account info.
         """
         args = locals()
+        print(args)
         args = self.__fix_params(args)
         self.__integrity_check(args)
         args = self.__parse_tuple(args)

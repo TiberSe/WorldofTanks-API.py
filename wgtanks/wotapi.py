@@ -4,6 +4,7 @@ import json
 import requests
 
 from .utils import except_params
+from .utils import warehouse
 from .utils.enum import Region
 from .utils.exception import *
 from .updater import WotApiUpdater
@@ -32,16 +33,9 @@ class WoTAPI:
         """Prints the logo of this wrapper.
         """
         if sheffield:
-            print(except_params.sheffield)
+            print(warehouse.sheffield)
             return True
-        print('''
-██╗    ██╗ ██████╗ ████████╗     █████╗ ██████╗ ██╗    ██╗    ██╗██████╗  █████╗ ██████╗ ██████╗ ███████╗██████╗
-██║    ██║██╔═══██╗╚══██╔══╝    ██╔══██╗██╔══██╗██║    ██║    ██║██╔══██╗██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗
-██║ █╗ ██║██║   ██║   ██║       ███████║██████╔╝██║    ██║ █╗ ██║██████╔╝███████║██████╔╝██████╔╝█████╗  ██████╔╝
-██║███╗██║██║   ██║   ██║       ██╔══██║██╔═══╝ ██║    ██║███╗██║██╔══██╗██╔══██║██╔═══╝ ██╔═══╝ ██╔══╝  ██╔══██╗
-╚███╔███╔╝╚██████╔╝   ██║       ██║  ██║██║     ██║    ╚███╔███╔╝██║  ██║██║  ██║██║     ██║     ███████╗██║  ██║
- ╚══╝╚══╝  ╚═════╝    ╚═╝       ╚═╝  ╚═╝╚═╝     ╚═╝     ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝     ╚══════╝╚═╝  ╚═╝
-        ''')
+        print(warehouse.api_logo)
         return True
 
     def get_account_id_by_name(self, account_name: str, limit: int = 5, exact: bool = True, fields: tuple = ()) -> dict:

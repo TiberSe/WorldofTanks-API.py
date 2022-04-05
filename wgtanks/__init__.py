@@ -1,5 +1,5 @@
 __version__ = '0.0.1'
-__authors__ = 'Androdameda, Sep., enderjoker'
+__authors__ = 'Sep.'
 
 from .updater import WotApiUpdater
 from .wotapi import WoTAPI

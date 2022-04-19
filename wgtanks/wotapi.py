@@ -293,8 +293,6 @@ class WoTAPI:
         return_data = json.loads(response.text)
         return return_data
 
-    
-
     def __fix_params(self, args: dict):
         for param in self._params[inspect.stack()[1].function]:
             if param['name'] in args:

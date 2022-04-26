@@ -17,7 +17,7 @@ class WoTAPI:
         self._API_TOKEN = api_token
         self._REGION = region
         self._LOCAL_LANG = lang
-        self._API_LANG = 'en'  # TODO: 'en'はru地域ではサポートされてないからregionがruのときだけ言語もruにするコードをいつか書く。
+        self._API_LANG = 'en' if not self._REGION == Region.RU else 'ru'
         self._MAIN_URL = region.value
         self._ACCOUNT_URL = f'{self._MAIN_URL}/account'
         self._CLANS_URL = f'{self._MAIN_URL}/clans'

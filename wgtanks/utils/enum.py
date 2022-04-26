@@ -11,4 +11,3 @@ class Region(Enum):
 class Lang(Enum):
     EN = 'en'
     RU = 'ru'
-    TH = 'th'

@@ -44,6 +44,18 @@ params = {
             'value': None,
             'type': tuple,
             'incl_only': str
+        },
+        {
+            'name': 'token',
+            'value': None,
+            'type': str,
+            'intervention': {
+                'account_id': {
+                    'name': 'account_id',
+                    'index': 0,
+                    'max_len': 1
+                }
+            }
         }
     ],
     "get_players_vehicles": [

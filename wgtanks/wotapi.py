@@ -59,12 +59,13 @@ class WoTAPI:
         return_data = json.loads(response.text)
         return return_data
 
-    def get_account_info(self, account_id: tuple, extra: str = '', fields: tuple = ()) -> dict:
+    def get_account_info(self, account_id: tuple, extra: str = '', fields: tuple = (), token: str = '') -> dict:
         """Retrieves the account info by account ID.
 
         :param tuple account_id: A tuple or int of ID(s) for the accounts to lookup. (Max: 100)
         :param tuple extra: A tuple of extra fields.
         :param tuple fields: A tuple of fields to return in the results.
+        :param str token: A token of
 
         :return: dict containing the account info.
         """
@@ -73,7 +74,7 @@ class WoTAPI:
         self.__integrity_check(args)
         args = self.__parse_tuple(args)
         url = f"{self._ACCOUNT_URL}/info/?application_id={self._API_TOKEN}&language={self._API_LANG}&"\
-              '&account_id={account_id}&extra={extra}&fields={fields}'.format(**args)
+              '&account_id={account_id}&extra={extra}&fields={fields}&access_token={token}'.format(**args)
         response = requests.get(url)
         return_data = json.loads(response.text)
         return return_data
@@ -312,7 +313,8 @@ class WoTAPI:
         return args
 
     def __integrity_check(self, args: dict):
-        for param in self._params[inspect.stack()[1].function]:
+        excpt_param = self._params[inspect.stack()[1].function]
+        for param in excpt_param:
             param['value'] = args[param['name']]
             if 'type' in param:
                 if not isinstance(param['value'], param['type']):
@@ -321,7 +323,7 @@ class WoTAPI:
             if 'min_len' in param:
                 if not len(param['value']) >= param['min_len']:
                     raise IllegalLengthException(
-                        var_name=param['name'], value=param['value'], intend=f'longer than {param["min_len"]} chars')
+                        var_name=param['name'], value=param['value'], intend=f'longer than {param["min_len"]}')
             if 'max_len' in param:
                 if not len(param['value']) <= param['max_len']:
                     raise IllegalLengthException(
@@ -339,5 +341,13 @@ class WoTAPI:
                     if not isinstance(series, param['incl_only']):
                         raise IllegalTypeException(
                             var_name=param['name'], value=param['value'], intend=str(param['incl_only']))
+            if 'intervention' in param:
+                for intervention in param['intervention']:
+                    ispect = param['intervention'][intervention]
+                    if 'max_len' in ispect:
+                        if not len(excpt_param[inspect['index']]['value']) <= inspect['max_len']:
+                            raise IllegalLengthException(var_name=param['name'], value=param['value'],
+                                                         intend=f'less than {param["max_len"]}')
+        for param in excpt_param:
             param['value'] = None
         return

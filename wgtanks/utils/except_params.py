@@ -218,7 +218,32 @@ params = {
             'type': tuple,
             'incl_only': str
         }
+    ],
+    "get_global_map_fronts": [
+        {
+            'name': 'fields',
+            'value': None,
+            'type': tuple,
+            'incl_only': str
+        },
+        {
+            'name': 'front_id',
+            'value': None,
+            'type': str
+        },
+        {
+            'name': 'limit',
+            'value': None,
+            'type': int
+        },
+        {
+            'name': 'page_no',
+            'value': None,
+            'type': int,
+            'min_num': 1,
+        }
     ]
+
 
 
 }

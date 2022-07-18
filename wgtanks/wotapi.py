@@ -53,7 +53,7 @@ class WoTAPI:
         self.__integrity_check(args)
         args = self.__parse_tuple(args)
         exact = 'exact' if exact else 'startswith'
-        url = f"{self._ACCOUNT_URL}/list/?application_id={self._API_TOKEN}&language={self._API_LANG}&type={exact}&"\
+        url = f"{self._ACCOUNT_URL}/list/?application_id={self._API_TOKEN}&language={self._API_LANG}&type={exact}&" \
               'search={account_name}&fields={fields}'.format(**args)
         response = requests.get(url)
         return_data = json.loads(response.text)
@@ -73,7 +73,7 @@ class WoTAPI:
         args = self.__fix_params(args)
         self.__integrity_check(args)
         args = self.__parse_tuple(args)
-        url = f"{self._ACCOUNT_URL}/info/?application_id={self._API_TOKEN}&language={self._API_LANG}&"\
+        url = f"{self._ACCOUNT_URL}/info/?application_id={self._API_TOKEN}&language={self._API_LANG}&" \
               '&account_id={account_id}&extra={extra}&fields={fields}&access_token={token}'.format(**args)
         response = requests.get(url)
         return_data = json.loads(response.text)
@@ -92,7 +92,7 @@ class WoTAPI:
         args = self.__fix_params(args)
         self.__integrity_check(args)
         args = self.__parse_tuple(args)
-        url = f'{self._ACCOUNT_URL}/tanks/?application_id={self._API_TOKEN}&language={self._API_LANG}&'\
+        url = f'{self._ACCOUNT_URL}/tanks/?application_id={self._API_TOKEN}&language={self._API_LANG}&' \
               'account_id={account_id}&tank_id={tank_id}&fields={fields}'.format(**args)
         response = requests.get(url)
         return_data = json.loads(response.text)
@@ -110,7 +110,7 @@ class WoTAPI:
         args = self.__fix_params(args)
         self.__integrity_check(args)
         args = self.__parse_tuple(args)
-        url = f'{self._ACCOUNT_URL}/achievements/?application_id={self._API_TOKEN}&language={self._API_LANG}&'\
+        url = f'{self._ACCOUNT_URL}/achievements/?application_id={self._API_TOKEN}&language={self._API_LANG}&' \
               'account_id={account_id}&fields={fields}'.format(**args)
         response = requests.get(url)
         return_data = json.loads(response.text)
@@ -130,7 +130,7 @@ class WoTAPI:
         args = self.__fix_params(args)
         self.__integrity_check(args)
         args = self.__parse_tuple(args)
-        url = f'{self._CLANS_URL}/list/?application_id={self._API_TOKEN}&language={self._API_LANG}&'\
+        url = f'{self._CLANS_URL}/list/?application_id={self._API_TOKEN}&language={self._API_LANG}&' \
               'search={clan_name}&page_no={page_no}&fields={fields}'.format(**args)
         response = requests.get(url)
         return_data = json.loads(response.text)
@@ -148,7 +148,7 @@ class WoTAPI:
         args = self.__fix_params(args)
         self.__integrity_check(args)
         args = self.__parse_tuple(args)
-        url = f'{self._CLANS_URL}/accountinfo/?application_id={self._API_TOKEN}&language={self._API_LANG}&'\
+        url = f'{self._CLANS_URL}/accountinfo/?application_id={self._API_TOKEN}&language={self._API_LANG}&' \
               'account_id={account_id}&fields={fields}'.format(**args)
         response = requests.get(url)
         return_data = json.loads(response.text)
@@ -246,13 +246,14 @@ class WoTAPI:
         args = self.__fix_params(args)
         self.__integrity_check(args)
         args = self.__parse_tuple(args)
-        url = f"{self._CLANRATINGS_URL}/clans/?application_id={self._API_TOKEN}&language={self._API_LANG}&"\
+        url = f"{self._CLANRATINGS_URL}/clans/?application_id={self._API_TOKEN}&language={self._API_LANG}&" \
               '&clan_id={clan_id}&fields={fields}'.format(**args)
         response = requests.get(url)
         return_data = json.loads(response.text)
         return return_data
 
-    def get_clan_adjacent_position_in_rating(self, clan_id: int, rank_field: str, date: int, limit: int = 5, fields: tuple = ()):
+    def get_clan_adjacent_position_in_rating(self, clan_id: int, rank_field: str, date: int, limit: int = 5,
+                                             fields: tuple = ()):
         """Retrieves the clan neighbors in ratings by clan ID.
 
         :param int clan_id: The int of ID for the clan ratings to lookup. (Max: 1)
@@ -294,6 +295,18 @@ class WoTAPI:
         return_data = json.loads(response.text)
         return return_data
 
+    def get_global_map_fronts(self, fields: tuple = (), front_id: str = '', limit: int = 10, page_no: int = 1):
+        args = locals()
+        args = self.__fix_params(args)
+        self.__integrity_check(args)
+        args = self.__parse_tuple(args)
+        url = f"{self._GMAP_URL}/fronts/?application_id={self._API_TOKEN}&language={self._API_LANG}&" \
+              '&front_id={front_id}&limit={limit}&page_no={page_no}&fields={fields}'.format(**args)
+        response = requests.get(url)
+        return_data = json.loads(response.text)
+        return return_data
+
+
     def __fix_params(self, args: dict):
         for param in self._params[inspect.stack()[1].function]:
             if param['name'] in args:
@@ -316,6 +329,8 @@ class WoTAPI:
         excpt_param = self._params[inspect.stack()[1].function]
         for param in excpt_param:
             param['value'] = args[param['name']]
+            if param['value'] is None:
+                continue
             if 'type' in param:
                 if not isinstance(param['value'], param['type']):
                     raise IllegalTypeException(
@@ -341,6 +356,7 @@ class WoTAPI:
                     if not isinstance(series, param['incl_only']):
                         raise IllegalTypeException(
                             var_name=param['name'], value=param['value'], intend=str(param['incl_only']))
+            """
             if 'intervention' in param:
                 for intervention in param['intervention']:
                     ispect = param['intervention'][intervention]
@@ -348,6 +364,7 @@ class WoTAPI:
                         if not len(excpt_param[inspect['index']]['value']) <= inspect['max_len']:
                             raise IllegalLengthException(var_name=param['name'], value=param['value'],
                                                          intend=f'less than {param["max_len"]}')
+            """
         for param in excpt_param:
             param['value'] = None
         return

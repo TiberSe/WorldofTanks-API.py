@@ -242,6 +242,18 @@ params = {
             'type': int,
             'min_num': 1,
         }
+    ],
+    "get_global_map_provinces": [
+        {
+            'name': 'fields',
+            'value': None,
+            'type': tuple,
+            'incl_only': str
+        },
+        {
+            'name': 'province_id',
+
+        }
     ]
 
 

@@ -217,7 +217,7 @@ class WoTAPI:
         return_data = json.loads(response.text)
         return return_data
 
-    def get_dates_with_available_clan_ratings(self, limit: int = 7):
+    def get_dates_with_available_clan_ratings(self, limit: int = 7) -> dict:
         """Retrieves types of ratings.
 
         :param int limit: The int of Limit to the dates with available ratings to lookup. (Max: 365)
@@ -253,7 +253,7 @@ class WoTAPI:
         return return_data
 
     def get_clan_adjacent_position_in_rating(self, clan_id: int, rank_field: str, date: int, limit: int = 5,
-                                             fields: tuple = ()):
+                                             fields: tuple = ()) -> dict:
         """Retrieves the clan neighbors in ratings by clan ID.
 
         :param int clan_id: The int of ID for the clan ratings to lookup. (Max: 1)
@@ -274,7 +274,8 @@ class WoTAPI:
         return_data = json.loads(response.text)
         return return_data
 
-    def get_ratings_top_clans(self, rank_field: str, date: int, limit: int = 10, page_no: int = 1, fields: tuple = ()):
+    def get_ratings_top_clans(self, rank_field: str, date: int, limit: int = 10, page_no: int = 1, fields: tuple = ())\
+            -> dict:
         """Retrieves the top clans in ratings by ranking field.
 
         :param str rank_field: The string of rank field to lookup.
@@ -295,7 +296,15 @@ class WoTAPI:
         return_data = json.loads(response.text)
         return return_data
 
-    def get_global_map_fronts(self, fields: tuple = (), front_id: str = '', limit: int = 10, page_no: int = 1):
+    def get_global_map_fronts(self, fields: tuple = (), front_id: str = '', limit: int = 10, page_no: int = 1) -> dict:
+        """Retrieves the global map fronts.
+
+        :param tuple fields: A tuple of fields to return in the results.
+        :param str front_id: The string of front id to lookup.
+        :param int limit: The maximum number of fronts to return.
+        :param int page_no: The int of page number to retrieve.
+        :return: dict containing the global map fronts.
+        """
         args = locals()
         args = self.__fix_params(args)
         self.__integrity_check(args)
@@ -306,8 +315,22 @@ class WoTAPI:
         return_data = json.loads(response.text)
         return return_data
 
+    def get_global_map_provinces(self, front_id: str, fields: tuple = (), limit: int = 100, page_no: int = 1) -> dict:
+        """Retrieves the global map provinces.
 
-    def __fix_params(self, args: dict):
+
+        """
+        args = locals()
+        args = self.__fix_params(args)
+        self.__integrity_check(args)
+        args = self.__parse_tuple(args)
+        url = f"{self._GMAP_URL}/provinces/?application_id={self._API_TOKEN}&language={self._API_LANG}&" \
+              '&front_id={front_id}&limit={limit}&page_no={page_no}&fields={fields}'.format(**args)
+        response = requests.get(url)
+        return_data = json.loads(response.text)
+        return return_data
+
+    def __fix_params(self, args: dict) -> dict:
         for param in self._params[inspect.stack()[1].function]:
             if param['name'] in args:
                 if 'incl_only' not in param:
